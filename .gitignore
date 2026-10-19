@@ -1,0 +1,11 @@
+# Compiled Java classes
+out/
+*.class
+ 
+# Downloaded library (download Connector/J again from the MySQL website)
+lib/*.jar
+ 
+# VS Code and OS files
+.vscode/
+.DS_Store
+Thumbs.db
