@@ -9,10 +9,10 @@
 ## Run from the terminal
 Windows:
     javac -cp "lib/*" -d out src/*.java
-    java -cp "out;lib/*" Main
+    java -cp "out;lib/*" src.WebServer
 Mac/Linux:
     javac -cp "lib/*" -d out src/*.java
-    java -cp "out:lib/*" Main
+    java -cp "out:lib/*" src.WebServer
 
 ## Run in VS Code
 Install the "Extension Pack for Java", open this folder, add the Connector/J jar under

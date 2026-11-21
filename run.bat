@@ -21,5 +21,5 @@ if not exist out\src\Main.class (
     if errorlevel 1 ( echo Compile failed. & pause & exit /b 1 )
 )
 
-"%JDK%\bin\java.exe" -cp "out;lib\*" src.Main
+"%JDK%\bin\java.exe" -cp "out;lib\*" src.WebServer
 pause
