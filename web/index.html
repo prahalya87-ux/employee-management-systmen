@@ -3,155 +3,137 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Employee Management System</title>
-  <link rel="stylesheet" href="style.css">
+  <title>SmartHR | Employee Management</title>
+  <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
-
-  <aside class="sidebar no-print">
-    <div class="brand">EMS</div>
-    <nav id="nav">
-      <button data-page="dashboard" class="active">Dashboard</button>
-      <button data-page="employees">Employees</button>
-      <button data-page="departments">Departments</button>
-      <button data-page="attendance">Attendance</button>
-      <button data-page="salary">Salary</button>
-      <button data-page="reports">Reports</button>
-    </nav>
-  </aside>
-
-  <main class="content">
-
-    <!-- Dashboard -->
-    <section id="dashboard" class="page active">
-      <h1>Dashboard</h1>
-      <div class="cards" id="stats"></div>
-      <div class="panel">
-        <h2>Employees per department</h2>
-        <div id="deptBars"></div>
+  <section id="loginScreen" class="login-screen">
+    <div class="login-brand"><div class="brand-mark">S</div><div><strong>SmartHR</strong><span>PEOPLE OPERATIONS</span></div></div>
+    <div class="login-layout">
+      <div class="login-intro">
+        <div class="intro-orb orb-one"></div><div class="intro-orb orb-two"></div>
+        <span class="intro-kicker">THE PEOPLE PLATFORM</span>
+        <h1>Great work starts<br>with great people.</h1>
+        <p>One clear view of your workforce, attendance, time off and payroll.</p>
+        <div class="intro-points"><span><i>✓</i> People, all in one place</span><span><i>✓</i> Payroll with confidence</span><span><i>✓</i> Your data stays yours</span></div>
+        <div class="intro-caption">SMARTER WORKFORCE MANAGEMENT</div>
       </div>
-    </section>
-
-    <!-- Employees -->
-    <section id="employees" class="page">
-      <h1>Employees</h1>
-      <div class="toolbar">
-        <input type="text" id="empSearch" placeholder="Search by name, department or ID...">
-        <select id="empSort">
-          <option value="id">Sort by ID</option>
-          <option value="salary">Salary (high to low)</option>
-        </select>
-        <button class="btn primary" id="addEmpBtn">+ Add Employee</button>
-      </div>
-      <div class="panel table-wrap">
-        <table>
-          <thead>
-            <tr><th>ID</th><th>Name</th><th>Type</th><th>Department</th><th>Job Role</th><th>Joined</th><th class="num">Salary</th><th>Actions</th></tr>
-          </thead>
-          <tbody id="empBody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- Departments -->
-    <section id="departments" class="page">
-      <h1>Departments</h1>
-      <div class="toolbar">
-        <button class="btn primary" id="addDeptBtn">+ Add Department</button>
-      </div>
-      <div class="panel table-wrap">
-        <table>
-          <thead>
-            <tr><th>ID</th><th>Name</th><th>Location</th><th class="num">Employees</th><th>Actions</th></tr>
-          </thead>
-          <tbody id="deptBody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- Attendance -->
-    <section id="attendance" class="page">
-      <h1>Attendance</h1>
-      <div class="panel">
-        <h2>Mark attendance</h2>
-        <div class="form-row">
-          <label>Employee <select id="attEmp"></select></label>
-          <label>Date <input type="date" id="attDate"></label>
-          <label>Status
-            <select id="attStatus">
-              <option>Present</option>
-              <option>Absent</option>
-            </select>
+      <div class="login-card">
+        <div class="login-heading"><span class="eyebrow">WELCOME BACK</span><h2>Sign in to your account</h2><p>Enter your work credentials to continue.</p></div>
+        <div id="loginError" class="login-error hidden" role="alert"></div>
+        <form id="loginForm">
+          <label for="loginUsername">Username or work email
+            <input id="loginUsername" name="username" type="text" autocomplete="username" placeholder="e.g. admin or you@company.com" required>
           </label>
-          <button class="btn primary" id="markBtn">Mark</button>
-        </div>
+          <label for="loginPassword">Password
+            <div class="password-wrap"><input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required><button type="button" id="togglePassword" aria-label="Show password">Show</button></div>
+          </label>
+          <div class="login-options"><label class="remember"><input id="rememberMe" type="checkbox"> Keep me signed in</label><span class="secure-note"><i></i> Secure sign-in</span></div>
+          <button class="btn primary login-btn" id="loginSubmit" type="submit"><span>Sign in</span><b>→</b></button>
+        </form>
+        <div class="login-help"><span>Demo account?</span><button type="button" id="useAdminDemo">Administrator</button><button type="button" id="useAdithyaDemo">Adithya</button></div>
+        <p class="login-credentials">Admin: <b>admin / admin123</b><br>Employee: <b>adithya / adithya123</b></p>
       </div>
-      <div class="panel">
-        <h2>Attendance history <span id="presentBadge" class="badge ok hidden"></span></h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Date</th><th>Status</th></tr></thead>
-            <tbody id="attBody"><tr><td colspan="2" class="muted">Select an employee to see their history.</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- Salary -->
-    <section id="salary" class="page">
-      <h1>Salary</h1>
-      <div class="panel no-print">
-        <div class="form-row">
-          <label>Employee <select id="salEmp"></select></label>
-          <label>Month <select id="salMonth"></select></label>
-          <label>Year <input type="number" id="salYear" min="2000" max="2100"></label>
-          <button class="btn primary" id="calcBtn">Calculate &amp; Save</button>
-          <button class="btn" id="slipBtn">View Saved Slip</button>
-        </div>
-        <p class="muted">Absent days marked in the Attendance page for the chosen month are deducted automatically.</p>
-      </div>
-      <div id="slipArea"></div>
-    </section>
-
-    <!-- Reports -->
-    <section id="reports" class="page">
-      <h1>Reports</h1>
-      <div class="cards" id="reportCards"></div>
-      <div class="panel">
-        <h2>Employees per department</h2>
-        <table class="small">
-          <thead><tr><th>Department</th><th class="num">Employees</th></tr></thead>
-          <tbody id="reportDeptBody"></tbody>
-        </table>
-      </div>
-      <div class="panel">
-        <h2>Employee &amp; salary report (highest salary first)</h2>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>ID</th><th>Name</th><th>Type</th><th>Department</th><th class="num">Basic</th><th class="num">Gross</th><th class="num">Deductions</th><th class="num">Net</th></tr>
-            </thead>
-            <tbody id="reportBody"></tbody>
-          </table>
-        </div>
-        <p class="muted">Figures assume a full month with no absences.</p>
-        <button class="btn no-print" onclick="window.print()">Print report</button>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Pop-up window used for forms and details -->
-  <div id="modal" class="modal hidden">
-    <div class="modal-box">
-      <h2 id="modalTitle"></h2>
-      <div id="modalBody"></div>
-      <div class="modal-actions" id="modalActions"></div>
     </div>
+    <div class="login-footer">© 2026 SmartHR <span>•</span> Secure workforce management</div>
+  </section>
+
+  <div id="appShell" class="app-shell sidebar-collapsed hidden">
+    <aside id="sidebar" class="sidebar no-print">
+      <div class="brand"><div class="brand-mark">S</div><div><strong>SmartHR</strong><span>HR Suite</span></div></div>
+      <nav id="nav">
+        <button data-page="dashboard" class="active"><span class="nav-icon">⌂</span>Dashboard</button>
+        <button data-page="employees" class="admin-only"><span class="nav-icon">♙</span>Employees</button>
+        <button data-page="attendance"><span class="nav-icon">✓</span>Attendance</button>
+        <button data-page="leave"><span class="nav-icon">◷</span>Leave Management</button>
+        <button data-page="salary"><span class="nav-icon">₹</span>Salary Management</button>
+        <button data-page="reports" class="admin-only"><span class="nav-icon">▥</span>Reports</button>
+        <button id="logoutBtn"><span class="nav-icon">↪</span>Logout</button>
+      </nav>
+    </aside>
+    <button id="sidebarOverlay" class="sidebar-overlay hidden no-print" aria-label="Close navigation"></button>
+    <main class="content">
+      <header class="topbar no-print">
+        <div class="topbar-title"><button id="menuToggle" class="menu-toggle" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false"><span></span><span></span><span></span></button><div><span id="pageEyebrow">OVERVIEW</span><h1 id="pageTitle">Dashboard</h1></div></div>
+        <div class="top-actions">
+          <div class="current-date" id="currentDate"></div>
+          <div class="avatar" id="userAvatar">A</div>
+        </div>
+      </header>
+
+      <section id="dashboard" class="page active">
+        <div class="cards" id="stats"></div>
+        <div class="dashboard-grid">
+          <div class="panel"><div class="panel-head"><h2>Department distribution</h2></div><div id="deptBars"></div></div>
+          <div class="panel"><div class="panel-head"><h2>Recent registrations</h2></div><div id="recentEmployees"></div></div>
+        </div>
+      </section>
+
+      <section id="employees" class="page">
+        <div class="toolbar">
+          <input type="search" id="empSearch" placeholder="Search employee name or ID">
+          <select id="empStatusFilter"><option value="">All statuses</option><option>Active</option><option>Inactive</option><option>On Leave</option></select>
+          <button class="btn primary" id="addEmpBtn">+ Add Employee</button>
+        </div>
+        <div class="panel table-wrap">
+          <table><thead><tr><th>Employee</th><th>Department</th><th>Designation</th><th>Joining date</th><th>Salary</th><th>Status</th><th>Actions</th></tr></thead><tbody id="empBody"></tbody></table>
+        </div>
+      </section>
+
+      <section id="attendance" class="page">
+        <div class="attendance-controls">
+          <div id="attDateControl"><label>Attendance date <input type="date" id="attDate"></label></div>
+          <div id="attMonthControl" class="hidden"><label>Attendance month <input type="month" id="attMonth"></label></div>
+          <button id="demoMonthBtn" class="btn">View October demo month</button>
+          <div class="employee-only hidden" id="employeeAttendanceFilter"><label>Search name <input type="search" id="attEmployeeSearch" placeholder="Search Adithya's attendance"></label></div>
+          <div class="attendance-filter" id="attendanceFilter"><input type="search" id="attSearch" placeholder="Search name or employee ID"><select id="attDept"><option value="">All departments</option></select></div>
+          <button id="submitAttendanceBtn" class="btn primary" disabled>Submit attendance <span id="attendancePendingCount">0</span></button>
+        </div>
+        <div class="cards" id="attendanceStats"></div>
+        <div class="panel table-wrap">
+          <table><thead id="attHead"><tr><th>Employee ID</th><th>Employee</th><th>Department</th><th>Designation</th><th>Status</th><th>Action</th></tr></thead><tbody id="attBody"></tbody></table>
+        </div>
+      </section>
+
+      <section id="leave" class="page">
+        <div class="leave-layout">
+          <div class="panel" id="leaveBalancePanel">
+            <div class="panel-head"><h2>Leave balance</h2></div><div id="leaveBalances"></div>
+          </div>
+          <div class="panel employee-leave-only">
+            <div class="panel-head"><h2>Apply for leave</h2></div>
+            <form id="leaveForm" class="leave-form">
+              <label>Leave type<select id="leaveType"><option>Casual Leave</option><option>Sick Leave</option><option>Earned Leave</option></select></label>
+              <div class="grid2"><label>Start date<input type="date" id="leaveStart"></label><label>End date<input type="date" id="leaveEnd"></label></div>
+              <label>Reason<textarea id="leaveReason" rows="4"></textarea></label>
+              <button class="btn primary" type="submit">Submit request</button>
+            </form>
+          </div>
+        </div>
+        <div class="panel table-wrap"><div class="panel-head"><h2>Leave requests</h2></div><table><thead><tr><th>Employee</th><th>Type</th><th>From</th><th>To</th><th>Reason</th><th>Status</th><th class="admin-only">Actions</th></tr></thead><tbody id="leaveBody"></tbody></table></div>
+      </section>
+
+      <section id="salary" class="page">
+        <div class="panel no-print">
+          <div class="form-row">
+            <label id="salEmployeeControl">Employee <select id="salEmp"></select></label>
+            <label>Month <select id="salMonth"></select></label>
+            <label>Year <input type="number" id="salYear" min="2000" max="2100"></label>
+            <button class="btn primary admin-only" id="calcBtn">Generate Salary Slip</button>
+          </div>
+        </div>
+        <div id="slipArea"></div>
+      </section>
+
+      <section id="reports" class="page">
+        <div class="cards" id="reportCards"></div>
+        <div class="panel table-wrap"><div class="panel-head"><h2>Employee & salary report</h2><button class="btn no-print" onclick="window.print()">Print report</button></div><table><thead><tr><th>ID</th><th>Name</th><th>Department</th><th class="num">Basic</th><th class="num">Gross</th><th class="num">Net</th></tr></thead><tbody id="reportBody"></tbody></table></div>
+      </section>
+    </main>
   </div>
 
+  <div id="modal" class="modal hidden"><div class="modal-box"><div class="modal-head"><h2 id="modalTitle"></h2><button id="modalClose" class="icon-btn">×</button></div><div id="modalBody"></div><div class="modal-actions" id="modalActions"></div></div></div>
   <div id="toast" class="toast hidden"></div>
-
-  <script src="app.js"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>

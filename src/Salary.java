@@ -29,10 +29,14 @@ public class Salary {
 
     /** Calculates a new salary. calculateBonus() is polymorphic: it depends on the object's real class. */
     public static Salary calculate(Employee emp, int month, int year, int absentDays) {
+        return calculate(emp, month, year, absentDays, 0);
+    }
+
+    public static Salary calculate(Employee emp, int month, int year, int absentDays, double bonusAdjustment) {
         double basic = emp.getBasicSalary();
         double hra = basic * 0.20;
         double da = basic * 0.10;
-        double bonus = emp.calculateBonus();
+        double bonus = emp.calculateBonus() + bonusAdjustment;
         double gross = basic + hra + da + bonus;
 
         double pf = basic * 0.12;

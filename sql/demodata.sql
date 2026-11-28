@@ -27,21 +27,27 @@ INSERT IGNORE INTO employees
 (111, 'Pooja Reddy',      28, 'Female', 'pooja.reddy@company.com',    '9876543211', (SELECT dept_id FROM departments WHERE dept_name='Marketing'),  'Content Writer',      '2022-10-24', 35000.00, 'Employee'),
 (112, 'Sanjay Kumar',     33, 'Male',   'sanjay.kumar@company.com',   '9876543212', (SELECT dept_id FROM departments WHERE dept_name='Operations'), 'Logistics Coordinator','2020-05-18', 40000.00, 'Employee');
 
--- Attendance for the 12 working days of 1-16 October 2026
--- (a few employees are marked Absent on some days so the salary deduction can be seen)
+-- Full working-month attendance demo for October 2026 (weekends excluded).
+-- INSERT IGNORE preserves any attendance that has already been edited.
 INSERT IGNORE INTO attendance (emp_id, att_date, status)
 SELECT e.emp_id, d.day,
        CASE WHEN (e.emp_id * 7 + DAY(d.day) * 3) % 11 = 0 THEN 'Absent' ELSE 'Present' END
 FROM employees e
 JOIN (
-  SELECT DATE('2026-10-01') AS day UNION ALL SELECT DATE('2026-10-02')
-  UNION ALL SELECT DATE('2026-10-05') UNION ALL SELECT DATE('2026-10-06')
-  UNION ALL SELECT DATE('2026-10-07') UNION ALL SELECT DATE('2026-10-08')
-  UNION ALL SELECT DATE('2026-10-09') UNION ALL SELECT DATE('2026-10-12')
-  UNION ALL SELECT DATE('2026-10-13') UNION ALL SELECT DATE('2026-10-14')
-  UNION ALL SELECT DATE('2026-10-15') UNION ALL SELECT DATE('2026-10-16')
+  SELECT DATE_ADD('2026-10-01', INTERVAL day_offset DAY) AS day
+  FROM (
+    SELECT 0 AS day_offset UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3
+    UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7
+    UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11
+    UNION ALL SELECT 12 UNION ALL SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15
+    UNION ALL SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19
+    UNION ALL SELECT 20 UNION ALL SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23
+    UNION ALL SELECT 24 UNION ALL SELECT 25 UNION ALL SELECT 26 UNION ALL SELECT 27
+    UNION ALL SELECT 28 UNION ALL SELECT 29 UNION ALL SELECT 30
+  ) day_offsets
 ) d
-WHERE e.emp_id BETWEEN 101 AND 112;
+WHERE e.emp_id BETWEEN 101 AND 112
+  AND WEEKDAY(d.day) < 5;
 
 -- Quick check
 SELECT COUNT(*) AS employees_loaded FROM employees WHERE emp_id BETWEEN 101 AND 112;

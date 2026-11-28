@@ -20,6 +20,9 @@ public class Employee {
     private String jobRole;
     private LocalDate joiningDate;
     private double basicSalary;
+    private LocalDate dateOfBirth;
+    private String address;
+    private String employmentStatus = "Active";
 
     public Employee(int empId, String name, int age, String gender, String email,
                     String phone, int deptId, String jobRole,
@@ -48,6 +51,9 @@ public class Employee {
     public String getJobRole() { return jobRole; }
     public LocalDate getJoiningDate() { return joiningDate; }
     public double getBasicSalary() { return basicSalary; }
+    public LocalDate getDateOfBirth() { return dateOfBirth; }
+    public String getAddress() { return address == null ? "" : address; }
+    public String getEmploymentStatus() { return employmentStatus; }
 
     // ---------- Setters (with validation) ----------
     public void setEmpId(int empId) {
@@ -93,6 +99,13 @@ public class Employee {
     public void setBasicSalary(double basicSalary) {
         if (!Validator.isValidSalary(basicSalary)) throw new IllegalArgumentException("Salary must be greater than 0.");
         this.basicSalary = basicSalary;
+    }
+    public void setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
+    public void setAddress(String address) { this.address = address == null ? "" : address.trim(); }
+    public void setEmploymentStatus(String employmentStatus) {
+        if (employmentStatus == null) employmentStatus = "Active";
+        if (!employmentStatus.matches("Active|Inactive|On Leave")) throw new IllegalArgumentException("Invalid employment status.");
+        this.employmentStatus = employmentStatus;
     }
 
     // ---------- Methods that subclasses override (polymorphism) ----------

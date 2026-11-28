@@ -14,6 +14,17 @@ public class EmployeeService {
             "SELECT e.*, d.dept_name FROM employees e LEFT JOIN departments d ON e.dept_id = d.dept_id ";
 
     // ---------------- Create ----------------
+    public int getNextEmployeeId() throws SQLException {
+        try (Connection con = DatabaseConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(
+                     "SELECT COALESCE(MAX(emp_id), 1000) + 1 FROM employees");
+             ResultSet rs = ps.executeQuery()) {
+            rs.next();
+            int next = rs.getInt(1);
+            return Math.max(next, 1001);
+        }
+    }
+
     public void addEmployee(Employee emp) throws SQLException {
         if (employeeExists(emp.getEmpId()))
             throw new IllegalArgumentException("Employee ID " + emp.getEmpId() + " already exists.");
@@ -21,7 +32,8 @@ public class EmployeeService {
             throw new IllegalArgumentException("Email " + emp.getEmail() + " is already used by another employee.");
 
         String sql = "INSERT INTO employees (emp_id, name, age, gender, email, phone, dept_id, "
-                + "job_role, joining_date, basic_salary, emp_type) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+                + "job_role, joining_date, basic_salary, emp_type, date_of_birth, address, employment_status) "
+                + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         try (Connection con = DatabaseConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, emp.getEmpId());
@@ -35,6 +47,10 @@ public class EmployeeService {
             ps.setDate(9, Date.valueOf(emp.getJoiningDate()));
             ps.setDouble(10, emp.getBasicSalary());
             ps.setString(11, emp.getEmployeeType());
+            if (emp.getDateOfBirth() == null) ps.setNull(12, Types.DATE);
+            else ps.setDate(12, Date.valueOf(emp.getDateOfBirth()));
+            ps.setString(13, emp.getAddress());
+            ps.setString(14, emp.getEmploymentStatus());
             ps.executeUpdate();
         }
     }
@@ -78,7 +94,8 @@ public class EmployeeService {
             throw new IllegalArgumentException("Email " + emp.getEmail() + " is already used by another employee.");
 
         String sql = "UPDATE employees SET name=?, age=?, gender=?, email=?, phone=?, dept_id=?, "
-                + "job_role=?, joining_date=?, basic_salary=? WHERE emp_id=?";
+                + "job_role=?, joining_date=?, basic_salary=?, date_of_birth=?, address=?, employment_status=? "
+                + "WHERE emp_id=?";
         try (Connection con = DatabaseConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, emp.getName());
@@ -90,7 +107,11 @@ public class EmployeeService {
             ps.setString(7, emp.getJobRole());
             ps.setDate(8, Date.valueOf(emp.getJoiningDate()));
             ps.setDouble(9, emp.getBasicSalary());
-            ps.setInt(10, emp.getEmpId());
+            if (emp.getDateOfBirth() == null) ps.setNull(10, Types.DATE);
+            else ps.setDate(10, Date.valueOf(emp.getDateOfBirth()));
+            ps.setString(11, emp.getAddress());
+            ps.setString(12, emp.getEmploymentStatus());
+            ps.setInt(13, emp.getEmpId());
             ps.executeUpdate();
         }
     }
@@ -98,7 +119,8 @@ public class EmployeeService {
     // ---------------- Delete ----------------
     public void deleteEmployee(int empId) throws SQLException, EmployeeNotFoundException {
         try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement("DELETE FROM employees WHERE emp_id = ?")) {
+             PreparedStatement ps = con.prepareStatement(
+                     "UPDATE employees SET employment_status='Inactive', deactivated_at=CURRENT_TIMESTAMP WHERE emp_id=?")) {
             ps.setInt(1, empId);
             if (ps.executeUpdate() == 0) throw new EmployeeNotFoundException(empId);
         }
@@ -179,6 +201,14 @@ public class EmployeeService {
             emp = new Employee(id, name, age, gender, email, phone, deptId, role, joined, salary);
 
         emp.setDepartmentName(rs.getString("dept_name"));
+        try {
+            Date dob = rs.getDate("date_of_birth");
+            emp.setDateOfBirth(dob == null ? null : dob.toLocalDate());
+            emp.setAddress(rs.getString("address"));
+            emp.setEmploymentStatus(rs.getString("employment_status"));
+        } catch (SQLException ignored) {
+            // Supports databases created before the HR profile columns were added.
+        }
         return emp;
     }
 }
