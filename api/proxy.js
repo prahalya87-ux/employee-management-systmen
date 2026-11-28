@@ -16,11 +16,15 @@ module.exports = async function handler(req, res) {
   }
 
   const incoming = new URL(req.url, 'https://vercel.invalid');
-  if (!incoming.pathname.startsWith('/api/')) {
+  const proxyPath = incoming.searchParams.get('__vercel_proxy_path')
+    || incoming.pathname.replace(/^\/api\//, '');
+  const pathSegments = proxyPath.split('/').filter(Boolean);
+  if (!pathSegments.length || pathSegments.some((segment) => segment === '.' || segment === '..')) {
     return res.status(404).json({ error: 'Not found.' });
   }
-  upstream.pathname = incoming.pathname;
-  upstream.search = incoming.search;
+  upstream.pathname = `/api/${pathSegments.map(encodeURIComponent).join('/')}`;
+  incoming.searchParams.delete('__vercel_proxy_path');
+  upstream.search = incoming.searchParams.toString();
 
   const headers = {};
   for (const name of ['authorization', 'content-type']) {
