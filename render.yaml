@@ -1,41 +1,18 @@
 services:
-  - type: pserv
-    name: employee-mysql
-    runtime: docker
-    plan: starter
-    dockerfilePath: ./Dockerfile.mysql
-    dockerContext: .
-    disk:
-      name: mysql-data
-      mountPath: /var/lib/mysql
-      sizeGB: 1
-    envVars:
-      - key: MYSQL_DATABASE
-        value: employee_management
-      - key: MYSQL_USER
-        value: smarthr_app
-      - key: MYSQL_PASSWORD
-        generateValue: true
-      - key: MYSQL_ROOT_PASSWORD
-        generateValue: true
-
   - type: web
     name: employee-management-api
     runtime: docker
-    plan: starter
+    plan: free
     healthCheckPath: /
     envVars:
       - key: APP_ENV
         value: production
       - key: DB_URL
-        value: jdbc:mysql://employee-mysql:3306/employee_management?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+        sync: false
       - key: DB_USER
-        value: smarthr_app
+        sync: false
       - key: DB_PASSWORD
-        fromService:
-          type: pserv
-          name: employee-mysql
-          envVarKey: MYSQL_PASSWORD
+        sync: false
       - key: ADMIN_USERNAME
         sync: false
       - key: ADMIN_PASSWORD

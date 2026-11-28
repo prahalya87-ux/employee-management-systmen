@@ -39,31 +39,31 @@ public class WebServer {
     private static final Map<String, Map<String, String>> sessions = new ConcurrentHashMap<>();
 
     public static void main(String[] args) throws IOException {
-        boolean production = "production".equalsIgnoreCase(System.getenv("APP_ENV"));
         if (!DatabaseConnection.testConnection()) return;
         try {
             DatabaseConnection.initializeSchema();
             hrService.ensureAdmin();
-            if (!production) {
-                String adithyaUsername = hrService.ensureAdithyaDemoAccount();
-                if (adithyaUsername != null)
-                    System.out.println("Adithya demo employee login: " + adithyaUsername + " / adithya123");
-                int demoAttendanceRows = attendanceService.ensureDemoMonth();
-                if (demoAttendanceRows > 0)
-                    System.out.println("Added " + demoAttendanceRows + " October 2026 demo attendance records.");
-                int novemberAttendanceRows = attendanceService.ensureDemoAttendance(
-                        LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 30));
-                if (novemberAttendanceRows > 0)
-                    System.out.println("Added " + novemberAttendanceRows + " November 2026 demo attendance records through today.");
-                if (employeeService.employeeExists(101)) {
-                    Employee adithya = employeeService.getEmployeeById(101);
-                    if ("Adithya".equalsIgnoreCase(adithya.getName())) {
-                        int completedMonth = LocalDate.now().getYear() == 2026
-                                ? LocalDate.now().getMonthValue() - 1 : 10;
-                        int generatedSlips = salaryService.ensureDemoSalaryHistory(adithya, 2026, completedMonth);
-                        if (generatedSlips > 0)
-                            System.out.println("Added " + generatedSlips + " completed 2026 salary records for Adithya.");
-                    }
+            int demoEmployees = employeeService.ensureDemoEmployees();
+            if (demoEmployees > 0)
+                System.out.println("Added " + demoEmployees + " demo employees.");
+            String adithyaUsername = hrService.ensureAdithyaDemoAccount();
+            if (adithyaUsername != null)
+                System.out.println("Adithya demo employee login: " + adithyaUsername + " / adithya123");
+            int demoAttendanceRows = attendanceService.ensureDemoMonth();
+            if (demoAttendanceRows > 0)
+                System.out.println("Added " + demoAttendanceRows + " October 2026 demo attendance records.");
+            int novemberAttendanceRows = attendanceService.ensureDemoAttendance(
+                    LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 30));
+            if (novemberAttendanceRows > 0)
+                System.out.println("Added " + novemberAttendanceRows + " November 2026 demo attendance records through today.");
+            if (employeeService.employeeExists(101)) {
+                Employee adithya = employeeService.getEmployeeById(101);
+                if ("Adithya".equalsIgnoreCase(adithya.getName())) {
+                    int completedMonth = LocalDate.now().getYear() == 2026
+                            ? LocalDate.now().getMonthValue() - 1 : 10;
+                    int generatedSlips = salaryService.ensureDemoSalaryHistory(adithya, 2026, completedMonth);
+                    if (generatedSlips > 0)
+                        System.out.println("Added " + generatedSlips + " completed 2026 salary records for Adithya.");
                 }
             }
         } catch (SQLException | EmployeeNotFoundException e) {

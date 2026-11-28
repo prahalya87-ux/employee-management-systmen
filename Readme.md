@@ -30,12 +30,13 @@ Install the "Extension Pack for Java", open this folder, add the Connector/J jar
 
 ## Deploy publicly (Vercel + Render)
 
-The Vercel site serves the static frontend and forwards `/api/*` requests to the Java API on Render. The Render Blueprint also starts a private MySQL container with a persistent disk and initializes it from `sql/Database.sql` on first launch. This is self-managed MySQL, not a Render-managed database; the MySQL service and disk require paid Render resources, and you are responsible for database backups and maintenance.
+The Vercel site serves the static frontend and forwards `/api/*` requests to the Java API on Render. The Render Blueprint creates only the Free web service; the database must be a separate MySQL-compatible service. Choose a provider and plan explicitly marked free, and check its storage, connection, and usage limits. Render's Free service does not provide persistent MySQL storage.
 
 1. Push this repository to GitHub.
-2. In Render, create a **Blueprint** from this repository and use `render.yaml`. Render generates the MySQL app/root passwords. Choose a unique `ADMIN_USERNAME` and a strong `ADMIN_PASSWORD` of at least 12 characters when prompted. Keep all credentials in Render's environment settings, not in source files.
-3. Wait for both Render services to deploy and copy the web service's HTTPS origin (for example, `https://employee-management-api.onrender.com`).
-4. Import this same repository into Vercel. Use the repository root as the project root and set `RENDER_API_URL` to the Render HTTPS origin. Deploy; Vercel uses `vercel.json` to publish `web/` and the `/api/*` function to proxy requests.
-5. Open the Vercel URL and sign in with the admin credentials you configured. Production mode does not create the demo employee or sample attendance/payroll data.
+2. Create a MySQL-compatible database with a provider whose free tier meets your needs, then import `sql/Database.sql`. Do not import `sql/demodata.sql` for real employee data.
+3. In Render, create a **Blueprint** from this repository and use `render.yaml`. Set `DB_URL`, `DB_USER`, and `DB_PASSWORD` from your database provider. Choose a unique `ADMIN_USERNAME` and a strong `ADMIN_PASSWORD` of at least 12 characters. Keep credentials in Render's environment settings, not in source files.
+4. Wait for the Render service to deploy and copy its HTTPS origin (for example, `https://employee-management-api.onrender.com`).
+5. Import this same repository into Vercel. Use the repository root as the project root and set `RENDER_API_URL` to the Render HTTPS origin. Deploy; Vercel uses `vercel.json` to publish `web/` and the `/api/*` function to proxy requests.
+6. Open the Vercel URL and sign in with the admin credentials you configured. Startup automatically creates the 12 demo employees and demo attendance/payroll data when they do not already exist.
 
 If the database already contains an admin account, startup leaves its password unchanged; configure credentials before the first production startup. If a database password was ever committed to Git, rotate it with the database provider—removing it from the current source does not remove it from Git history.

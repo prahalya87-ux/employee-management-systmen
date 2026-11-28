@@ -1,3 +1,4 @@
 FROM mysql:8.4
 COPY sql/Database.sql /docker-entrypoint-initdb.d/01-database.sql
+COPY sql/demodata.sql /docker-entrypoint-initdb.d/02-demodata.sql
 EXPOSE 3306
