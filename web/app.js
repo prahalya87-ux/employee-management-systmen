@@ -78,19 +78,6 @@ $('#loginForm').onsubmit=async e=> {
     button.innerHTML='<span>Sign in</span><b>→</b>';
   }
 };
-$('#useAdminDemo').onclick=()=>{
-  $('#loginUsername').value='admin';
-  $('#loginPassword').value='admin123';
-  clearLoginError();
-  $('#loginPassword').focus();
-};
-$('#useAdithyaDemo').onclick=()=>{
-  $('#loginUsername').value='adithya';
-  $('#loginPassword').value='adithya123';
-  clearLoginError();
-  $('#loginPassword').focus();
-};
-
 function startApp(){
   $('#loginScreen').classList.add('hidden'); $('#appShell').classList.remove('hidden');
   $('#userAvatar').textContent=(session.username||'U').slice(0,1).toUpperCase();

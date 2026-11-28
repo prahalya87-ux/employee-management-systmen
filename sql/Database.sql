@@ -34,13 +34,6 @@ CREATE TABLE IF NOT EXISTS attendance (
     FOREIGN KEY (emp_id) REFERENCES employees(emp_id) ON DELETE CASCADE
 );
 
--- HR profile and authentication fields
-ALTER TABLE employees
-    ADD COLUMN IF NOT EXISTS date_of_birth DATE NULL,
-    ADD COLUMN IF NOT EXISTS address VARCHAR(255) NULL,
-    ADD COLUMN IF NOT EXISTS employment_status ENUM('Active','Inactive','On Leave') NOT NULL DEFAULT 'Active',
-    ADD COLUMN IF NOT EXISTS deactivated_at TIMESTAMP NULL;
-
 CREATE TABLE IF NOT EXISTS users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     emp_id INT NULL,

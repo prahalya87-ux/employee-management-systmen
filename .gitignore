@@ -1,6 +1,9 @@
 # Compiled Java classes
 out/
+target/
 *.class
+.env
+.env.*
  
 # Downloaded library (download Connector/J again from the MySQL website)
 lib/*.jar

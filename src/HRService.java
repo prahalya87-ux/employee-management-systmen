@@ -21,7 +21,15 @@ public class HRService {
              ResultSet rs = check.executeQuery()) {
             if (rs.next()) return;
         }
-        createUser(null, "admin", "admin123", "ADMIN");
+        boolean production = "production".equalsIgnoreCase(System.getenv("APP_ENV"));
+        String username = System.getenv("ADMIN_USERNAME");
+        String password = System.getenv("ADMIN_PASSWORD");
+        if (production && (username == null || username.trim().isEmpty()
+                || password == null || password.length() < 12)) {
+            throw new SQLException("Set ADMIN_USERNAME and an ADMIN_PASSWORD of at least 12 characters.");
+        }
+        createUser(null, username == null || username.trim().isEmpty() ? "admin" : username,
+                password == null || password.isEmpty() ? "admin123" : password, "ADMIN");
     }
 
     public String ensureAdithyaDemoAccount() throws SQLException {

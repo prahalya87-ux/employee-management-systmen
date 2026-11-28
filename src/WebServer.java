@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class WebServer {
 
-    private static final int PORT = 8080;
+    private static final int PORT = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
     private static final Path WEB_DIR = Paths.get("web").toAbsolutePath().normalize();
 
     private static final EmployeeService employeeService = new EmployeeService();
@@ -39,28 +39,31 @@ public class WebServer {
     private static final Map<String, Map<String, String>> sessions = new ConcurrentHashMap<>();
 
     public static void main(String[] args) throws IOException {
+        boolean production = "production".equalsIgnoreCase(System.getenv("APP_ENV"));
         if (!DatabaseConnection.testConnection()) return;
         try {
             DatabaseConnection.initializeSchema();
             hrService.ensureAdmin();
-            String adithyaUsername = hrService.ensureAdithyaDemoAccount();
-            if (adithyaUsername != null)
-                System.out.println("Adithya demo employee login: " + adithyaUsername + " / adithya123");
-            int demoAttendanceRows = attendanceService.ensureDemoMonth();
-            if (demoAttendanceRows > 0)
-                System.out.println("Added " + demoAttendanceRows + " October 2026 demo attendance records.");
-            int novemberAttendanceRows = attendanceService.ensureDemoAttendance(
-                    LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 30));
-            if (novemberAttendanceRows > 0)
-                System.out.println("Added " + novemberAttendanceRows + " November 2026 demo attendance records through today.");
-            if (employeeService.employeeExists(101)) {
-                Employee adithya = employeeService.getEmployeeById(101);
-                if ("Adithya".equalsIgnoreCase(adithya.getName())) {
-                    int completedMonth = LocalDate.now().getYear() == 2026
-                            ? LocalDate.now().getMonthValue() - 1 : 10;
-                    int generatedSlips = salaryService.ensureDemoSalaryHistory(adithya, 2026, completedMonth);
-                    if (generatedSlips > 0)
-                        System.out.println("Added " + generatedSlips + " completed 2026 salary records for Adithya.");
+            if (!production) {
+                String adithyaUsername = hrService.ensureAdithyaDemoAccount();
+                if (adithyaUsername != null)
+                    System.out.println("Adithya demo employee login: " + adithyaUsername + " / adithya123");
+                int demoAttendanceRows = attendanceService.ensureDemoMonth();
+                if (demoAttendanceRows > 0)
+                    System.out.println("Added " + demoAttendanceRows + " October 2026 demo attendance records.");
+                int novemberAttendanceRows = attendanceService.ensureDemoAttendance(
+                        LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 30));
+                if (novemberAttendanceRows > 0)
+                    System.out.println("Added " + novemberAttendanceRows + " November 2026 demo attendance records through today.");
+                if (employeeService.employeeExists(101)) {
+                    Employee adithya = employeeService.getEmployeeById(101);
+                    if ("Adithya".equalsIgnoreCase(adithya.getName())) {
+                        int completedMonth = LocalDate.now().getYear() == 2026
+                                ? LocalDate.now().getMonthValue() - 1 : 10;
+                        int generatedSlips = salaryService.ensureDemoSalaryHistory(adithya, 2026, completedMonth);
+                        if (generatedSlips > 0)
+                            System.out.println("Added " + generatedSlips + " completed 2026 salary records for Adithya.");
+                    }
                 }
             }
         } catch (SQLException | EmployeeNotFoundException e) {
@@ -72,7 +75,7 @@ public class WebServer {
             System.out.println("Run the server from the project root folder (the one that contains 'web' and 'src').");
             return;
         }
-        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", PORT), 0);
         server.createContext("/", WebServer::handle);
         server.start();
         System.out.println("Employee Management System is running.");
